@@ -1,0 +1,42 @@
+{
+  "name": "dissolve-animation",
+  "version": "0.1.0",
+  "description": "A project leveraging ES6 Promises, classes, and subclasses to control various CSS animations.",
+  "main": "dissolve-animation",
+  "scripts": {
+    "start": "node example-server/server.js",
+    "postinstall": "cd example-project-angular/ && npm install && ng build --aot -prod",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tdnelson2/dissolve-animation.git"
+  },
+  "keywords": [
+    "animation",
+    "css",
+    "angular",
+    "promises",
+    "classes",
+    "subclasses",
+    "cross-dissolve",
+    "sequence-desolve"
+  ],
+  "author": "Timothy Nelson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tdnelson2/dissolve-animation/issues"
+  },
+  "homepage": "https://github.com/tdnelson2/dissolve-animation#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "typescript": "~2.5.3"
+  },
+  "engines": {
+    "node": "9.6.1",
+    "npm": "5.6.0"
+  },
+  "devDependencies": {
+    "enhanced-resolve": "^3.3.0"
+  }
+}
