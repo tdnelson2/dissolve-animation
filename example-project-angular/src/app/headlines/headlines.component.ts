@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
-import { SequenceDissolve } from '../dissolve-animation/sequence-dissolve';
+import { SequenceDissolve } from '../../../../dissolve-animation/sequence-dissolve';
 
 import { headlines } from './headlines';
 @Component({
   selector: 'app-headlines',
   templateUrl: './headlines.component.html',
-  styleUrls: ['./headlines.component.css',  '../dissolve-animation/styles.css']
+  styleUrls: ['../../../../dissolve-animation/styles.css', './headlines.component.css']
 })
 export class HeadlinesComponent implements OnInit {
 
