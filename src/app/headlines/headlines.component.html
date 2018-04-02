@@ -1,0 +1,7 @@
+<div *ngIf="sequenceDissolve &&
+            sequenceDissolve.itemA &&
+            sequenceDissolve.itemB"
+            class="headline">
+    <h1 [ngClass]="sequenceDissolve.itemA.klass">{{sequenceDissolve.itemA.data.headline}}</h1>
+    <h1 [ngClass]="sequenceDissolve.itemB.klass">{{sequenceDissolve.itemB.data.headline}}</h1>
+</div>

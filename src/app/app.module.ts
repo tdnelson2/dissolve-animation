@@ -7,11 +7,15 @@ import { PhotoService }                       from './photo.service';
 
 
 import { AppComponent } from './app.component';
+import { SlideshowComponent } from './slideshow/slideshow.component';
+import { HeadlinesComponent } from './headlines/headlines.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SlideshowComponent,
+    HeadlinesComponent
   ],
   imports: [
     BrowserModule,
