@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node example-server/server.js",
     "postinstall": "cd example-project-angular/ && npm install && ng build --aot -prod",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "ng": "cd example-project-angular/ && ng",
+    "build": "cd example-project-angular/ && npm run build",
+    "test": "cd example-project-angular/ && npm run test",
+    "lint": "cd example-project-angular/ && npm run lint",
+    "e2e": "cd example-project-angular/ && npm run e2e"
   },
   "repository": {
     "type": "git",
