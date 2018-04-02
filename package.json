@@ -1,46 +1,58 @@
 {
-  "name": "dissolve-animation",
-  "version": "0.1.0",
-  "description": "A project leveraging ES6 Promises, classes, and subclasses to control various CSS animations.",
-  "main": "dissolve-animation",
+  "name": "dissolve",
+  "version": "0.0.0",
+  "license": "MIT",
   "scripts": {
-    "start": "node example-server/server.js",
-    "postinstall": "cd example-project-angular/ && npm install && ng build --aot -prod",
-    "ng": "cd example-project-angular/ && ng",
-    "build": "cd example-project-angular/ && npm run build",
-    "test": "cd example-project-angular/ && npm run test",
-    "lint": "cd example-project-angular/ && npm run lint",
-    "e2e": "cd example-project-angular/ && npm run e2e"
+    "postinstall": "ng build --aot -prod",
+    "start": "node server/server.js",
+    "ng": "ng",
+    "build": "ng build --prod",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tdnelson2/dissolve-animation.git"
-  },
-  "keywords": [
-    "animation",
-    "css",
-    "angular",
-    "promises",
-    "classes",
-    "subclasses",
-    "cross-dissolve",
-    "sequence-desolve"
-  ],
-  "author": "Timothy Nelson",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tdnelson2/dissolve-animation/issues"
-  },
-  "homepage": "https://github.com/tdnelson2/dissolve-animation#readme",
+  "private": true,
   "dependencies": {
+    "@angular/animations": "^5.2.0",
+    "@angular/cli": "~1.7.1",
+    "@angular/common": "^5.2.0",
+    "@angular/compiler": "^5.2.0",
+    "@angular/compiler-cli": "^5.2.0",
+    "@angular/core": "^5.2.0",
+    "@angular/forms": "^5.2.0",
+    "@angular/http": "^5.2.0",
+    "@angular/platform-browser": "^5.2.0",
+    "@angular/platform-browser-dynamic": "^5.2.0",
+    "@angular/router": "^5.2.0",
+    "core-js": "^2.4.1",
     "express": "^4.16.3",
+    "rxjs": "^5.5.6",
+    "typescript": "~2.5.3",
+    "zone.js": "^0.8.19"
+  },
+  "devDependencies": {
+    "@angular/cli": "~1.7.1",
+    "@angular/compiler-cli": "^5.2.0",
+    "@angular/language-service": "^5.2.0",
+    "@types/jasmine": "~2.8.3",
+    "@types/jasminewd2": "~2.0.2",
+    "@types/node": "~6.0.60",
+    "codelyzer": "^4.0.1",
+    "enhanced-resolve": "^3.3.0",
+    "jasmine-core": "~2.8.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~2.0.0",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "^1.2.1",
+    "karma-jasmine": "~1.1.0",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "protractor": "~5.1.2",
+    "ts-node": "~4.1.0",
+    "tslint": "~5.9.1",
     "typescript": "~2.5.3"
   },
   "engines": {
     "node": "9.6.1",
     "npm": "5.6.0"
-  },
-  "devDependencies": {
-    "enhanced-resolve": "^3.3.0"
   }
 }

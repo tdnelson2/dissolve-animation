@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { CrossDissolve } from '../../../../dissolve-animation/cross-dissolve';
+import { CrossDissolve } from '../../../dissolve-animation/cross-dissolve';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -9,7 +9,7 @@ import { PhotoService } from '../photo.service';
 @Component({
   selector: 'app-slideshow',
   templateUrl: './slideshow.component.html',
-  styleUrls: ['../../../../dissolve-animation/styles.css', './slideshow.component.css']
+  styleUrls: ['../../../dissolve-animation/styles.css', './slideshow.component.css']
 })
 export class SlideshowComponent implements OnInit {
 
