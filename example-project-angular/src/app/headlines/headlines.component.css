@@ -1,6 +1,14 @@
 
 .headline {
-  color: #ffffff;
   padding-top: 100px;
   text-align: center;
+}
+
+.headline a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.headline a:hover {
+  text-decoration: underline;
 }

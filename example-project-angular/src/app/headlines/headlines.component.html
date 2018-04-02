@@ -2,6 +2,16 @@
             sequenceDissolve.itemA &&
             sequenceDissolve.itemB"
             class="headline">
-    <h1 [ngClass]="sequenceDissolve.itemA.klass">{{sequenceDissolve.itemA.data.headline}}</h1>
-    <h1 [ngClass]="sequenceDissolve.itemB.klass">{{sequenceDissolve.itemB.data.headline}}</h1>
+    <h1 [ngClass]="sequenceDissolve.itemA.klass">
+    	<a href="{{sequenceDissolve.itemA.data.url}}"
+    	   target="_blank">
+	    	{{sequenceDissolve.itemA.data.title}}
+	    </a>
+    </h1>
+    <h1 [ngClass]="sequenceDissolve.itemB.klass">
+    	<a href="{{sequenceDissolve.itemB.data.url}}"
+    	   target="_blank">
+	    	{{sequenceDissolve.itemB.data.title}}
+	    </a>
+    </h1>
 </div>
