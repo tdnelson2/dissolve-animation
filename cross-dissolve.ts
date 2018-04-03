@@ -3,13 +3,13 @@ import { TransitionItem } from './transition-item';
 
 export class CrossDissolve extends DissolveAnimation {
 
-  constructor( db: any[],
-               transitionDuration: number,
-               interval: number,
-               staticKlasses: string=undefined,
-               fadeInOverride: string=undefined,
-               fadeOutOverride: string=undefined) {
-    super(db, transitionDuration, interval, staticKlasses,
+  constructor( dataArray:          any[],
+               staticKlasses:      string=undefined,
+               interval:           number=undefined,
+               transitionDuration: number=undefined,
+               fadeInOverride:     string=undefined,
+               fadeOutOverride:    string=undefined) {
+    super(dataArray, staticKlasses, interval, transitionDuration,
                fadeInOverride, fadeOutOverride);
   };
 

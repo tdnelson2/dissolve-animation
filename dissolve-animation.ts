@@ -7,25 +7,38 @@ export class DissolveAnimation {
   public itemB: TransitionItem;
   public data: any;
   public i = 0;
-  public db: any[];
+  public dataArray: any[];
   public transitionDuration: number;
   public interval: number;
   public staticKlasses: string;
-  private fadeInCSSLabel = 'da-fade-in';
-  private fadeOutCSSLabel = 'da-fade-out';
+  private fadeInCSSLabel: string;
+  private fadeOutCSSLabel: string;
 
-  constructor( db: any[],
+  constructor( dataArray:          any[],
+               staticKlasses:      string,
+               interval:           number=8000,
                transitionDuration: number,
-               interval: number,
-               staticKlasses: string,
-               fadeInOverride: string,
-               fadeOutOverride: string) {
-    this.db = db;
-    this.transitionDuration = transitionDuration;
+               fadeInOverride:     string,
+               fadeOutOverride:    string) {
+    this.dataArray = dataArray;
     this.staticKlasses = staticKlasses;
     this.interval = interval;
-    if (fadeInOverride) this.fadeInCSSLabel = fadeInOverride;
-    if (fadeOutOverride) this.fadeOutCSSLabel = fadeOutOverride;
+
+    if (transitionDuration && (!fadeInOverride || !fadeOutOverride)) {
+      throw 'ERROR: parameter 5 (fade in CSS class name) '+
+            'and 6 (fade out CSS class name) are required '+
+            'if you provide a 3rd parameter (transition duration).';
+    } else if (transitionDuration && (fadeInOverride && fadeOutOverride)) {
+      this.fadeInCSSLabel = fadeInOverride;
+      this.fadeOutCSSLabel = fadeOutOverride;
+    } else {
+      this.fadeInCSSLabel = 'da-fade-in';
+      this.fadeOutCSSLabel = 'da-fade-out';
+    }
+
+    // Make the transition duration slightly shorter
+    // to avoid a flash when the transition ends
+    this.transitionDuration = transitionDuration ? Math.floor(transitionDuration*.96): 2900;
   };
 
   public klasses(klasses: string):string {
@@ -70,7 +83,7 @@ export class DissolveAnimation {
 
   public next(): any {
     const index = this.i;
-    this.i = this.i === this.db.length-1 ? 0 : this.i+1;
-    return this.db[index];
+    this.i = this.i === this.dataArray.length-1 ? 0 : this.i+1;
+    return this.dataArray[index];
   }
 }

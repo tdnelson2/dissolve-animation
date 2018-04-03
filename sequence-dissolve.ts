@@ -3,18 +3,15 @@ import { TransitionItem } from './transition-item';
 
 export class SequenceDissolve extends DissolveAnimation {
 
-  constructor( db: any[],
-               transitionDuration: number,
-               interval: number,
-               staticKlasses: string=undefined,
-               fadeInOverride: string=undefined,
-               fadeOutOverride: string=undefined) {
+  constructor( dataArray:          any[],
+               staticKlasses:      string=undefined,
+               interval:           number=undefined,
+               transitionDuration: number=undefined,
+               fadeInOverride:     string=undefined,
+               fadeOutOverride:    string=undefined) {
 
-    // Make the transition duration slightly shorter
-    // to avoid a flash when the transition ends
-    const tdAdjusted = Math.floor(transitionDuration*.96);
-    super(db, tdAdjusted, interval, staticKlasses,
-               fadeInOverride, fadeOutOverride);
+    super(dataArray, staticKlasses, interval, transitionDuration,
+          fadeInOverride, fadeOutOverride);
   };
 
   public animate(): void {
