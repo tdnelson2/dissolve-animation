@@ -19,26 +19,24 @@ export class DissolveAnimation {
                interval:           number=8000,
                transitionDuration: number,
                fadeInOverride:     string,
-               fadeOutOverride:    string) {
+               fadeOutOverride:    string,
+               transitionDurationWasProvided=false) {
     this.dataArray = dataArray;
     this.staticKlasses = staticKlasses;
     this.interval = interval;
+    this.transitionDuration = transitionDuration;
 
-    if (transitionDuration && (!fadeInOverride || !fadeOutOverride)) {
+    if (transitionDurationWasProvided && (!fadeInOverride || !fadeOutOverride)) {
       throw 'ERROR: parameter 5 (fade in CSS class name) '+
             'and 6 (fade out CSS class name) are required '+
             'if you provide a 3rd parameter (transition duration).';
-    } else if (transitionDuration && (fadeInOverride && fadeOutOverride)) {
+    } else if (transitionDurationWasProvided && (fadeInOverride && fadeOutOverride)) {
       this.fadeInCSSLabel = fadeInOverride;
       this.fadeOutCSSLabel = fadeOutOverride;
     } else {
       this.fadeInCSSLabel = 'da-fade-in';
       this.fadeOutCSSLabel = 'da-fade-out';
     }
-
-    // Make the transition duration slightly shorter
-    // to avoid a flash when the transition ends
-    this.transitionDuration = transitionDuration ? Math.floor(transitionDuration*.96): 2900;
   };
 
   public klasses(klasses: string):string {
@@ -52,8 +50,8 @@ export class DissolveAnimation {
   public hiddenKlass    = () => this.klasses('da-hidden');
   public shownKlass     = () => this.klasses('da-shown');
 
-  private promisefy = (item: any, klasses, delay):Promise<any> => {
-    item.klass = this.klasses(klasses);
+  private promisefy = (item: TransitionItem, klass: string, delay: number):Promise<any> => {
+    item.klass = klass;
     return new Promise((r, j) => setTimeout(r, delay, item));
   }
 

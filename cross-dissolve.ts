@@ -9,8 +9,8 @@ export class CrossDissolve extends DissolveAnimation {
                transitionDuration: number=undefined,
                fadeInOverride:     string=undefined,
                fadeOutOverride:    string=undefined) {
-    super(dataArray, staticKlasses, interval, transitionDuration,
-               fadeInOverride, fadeOutOverride);
+    super(dataArray, staticKlasses, interval, transitionDuration ? transitionDuration : 3000,
+               fadeInOverride, fadeOutOverride, transitionDuration !== undefined);
   };
 
   public animate(): void {

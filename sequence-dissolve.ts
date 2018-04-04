@@ -10,8 +10,14 @@ export class SequenceDissolve extends DissolveAnimation {
                fadeInOverride:     string=undefined,
                fadeOutOverride:    string=undefined) {
 
+    const transitionDurationWasProvided = transitionDuration !== undefined;
+
+    // // Make the transition duration slightly shorter
+    // // to avoid a flash when the transition ends
+    transitionDuration = transitionDuration ? Math.floor(transitionDuration*.96): 2900;
+
     super(dataArray, staticKlasses, interval, transitionDuration,
-          fadeInOverride, fadeOutOverride);
+          fadeInOverride, fadeOutOverride, transitionDurationWasProvided);
   };
 
   public animate(): void {
