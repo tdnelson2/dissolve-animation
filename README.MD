@@ -1,3 +1,5 @@
+Live example: [https://dissolve.herokuapp.com/](https://dissolve.herokuapp.com/)
+
 # DissolveAnimation
 
 This module implements ES6 Promises, classes, and subclasses under the hood to control various CSS animations. It's currently only setup to work with Angular, but everything is writen in vanilla JavaScript (TypeScript) so it could easily be adapted to work with other frameworks.
