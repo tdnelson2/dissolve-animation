@@ -1,6 +1,6 @@
 {
   "name": "css-dissolve-animation-angular",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A vanilla JavaScript (TypeScript) module simplifying loopable dissolve animations",
   "main": "./bundles/css-dissolve-animation-angular.umd.js",
   "module": "./css-dissolve-animation-angular.es5.js",
@@ -18,10 +18,6 @@
   },
   "scripts": {
     "release": "standard-version"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tdnelson2/dissolve-animation.git"
   },
   "keywords": [
     "animation",
