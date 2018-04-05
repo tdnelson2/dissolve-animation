@@ -8,14 +8,28 @@ I decided to create this after I was unable to find other libraries that are ful
 
 ## Getting started
 
-Eventually this will be a npm package but for now simply `cd` into the root of your project and run `git clone --depth=1 --branch=master https://github.com/tdnelson2/dissolve-animation.git`.
+`cd` into your project directory and run `npm install --save css-dissolve-animation-angular`.
 
 ## Animation Types
 
 There are currently only two dissolve types:
 
 * **Cross Dissolve**: One element fades out while another element fades in simultaneously.
+  * `import { CrossDissolve } from 'css-dissolve-animation-angular';`
 * **Sequence Dissolve**: One element fades out then the second element fades in.
+  * `import { SequenceDissolve } from 'css-dissolve-animation-angular';`
+
+## Using With Angular Components
+
+* In each component using DissolveAnimation, add the path to this module's stylesheet to the component decorator under `styleUrls`:
+
+```typescript
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './app.component.css']
+})
+```
 
 ## Dissolve `class` Parameters
 
@@ -83,13 +97,13 @@ export class PhotoService {
 ```typescript
 import { Component, OnInit } from '@angular/core';
 
-import { CrossDissolve } from '../../../dissolve-animation/cross-dissolve';
+import { CrossDissolve } from 'css-dissolve-animation-angular';
 import { PhotoService } from '../photo.service';
 
 @Component({
   selector: 'app-slideshow',
   templateUrl: './slideshow.component.html',
-  styleUrls: ['../../../dissolve-animation/styles.css', './slideshow.component.css']
+  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './slideshow.component.css']
 })
 export class SlideshowComponent implements OnInit {
 
@@ -189,13 +203,14 @@ export const HEADLINES =
 ```typescript
 import { Component, OnInit } from '@angular/core';
 
-import { SequenceDissolve } from '../../../dissolve-animation/sequence-dissolve';
+
+import { SequenceDissolve } from 'css-dissolve-animation-angular';
 
 import { HEADLINES } from './headlines';
 @Component({
   selector: 'app-headlines',
   templateUrl: './headlines.component.html',
-  styleUrls: ['../../../dissolve-animation/styles.css', './headlines.component.css']
+  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './headlines.component.css']
 })
 export class HeadlinesComponent implements OnInit {
 
