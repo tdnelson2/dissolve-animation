@@ -1,3 +1,5 @@
+Live example: [https://dissolve.herokuapp.com/](https://dissolve.herokuapp.com/)
+
 # DissolveAnimation
 
 This module implements ES6 Promises, classes, and subclasses under the hood to control various CSS animations. It's currently only setup to work with Angular, but everything is writen in vanilla JavaScript (TypeScript) so it could easily be adapted to work with other frameworks.
@@ -8,14 +10,28 @@ I decided to create this after I was unable to find other libraries that are ful
 
 ## Getting started
 
-Eventually this will be a npm package but for now simply `cd` into the root of your project and run `git clone --depth=1 --branch=master https://github.com/tdnelson2/dissolve-animation.git`.
+`cd` into your project directory and run `npm install --save css-dissolve-animation-angular`.
 
 ## Animation Types
 
 There are currently only two dissolve types:
 
 * **Cross Dissolve**: One element fades out while another element fades in simultaneously.
+  * `import { CrossDissolve } from 'css-dissolve-animation-angular';`
 * **Sequence Dissolve**: One element fades out then the second element fades in.
+  * `import { SequenceDissolve } from 'css-dissolve-animation-angular';`
+
+## Using With Angular Components
+
+* In each component using DissolveAnimation, add the path to this module's stylesheet to the component decorator under `styleUrls`:
+
+```typescript
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './app.component.css']
+})
+```
 
 ## Dissolve `class` Parameters
 
@@ -31,7 +47,7 @@ CrossDissolve(dataArray: any[], staticKlasses?: string, interval: number?, trans
 * `transitionDuration`: `number` in miliseconds indicating length of the transition (`3000` if none is provided).
 * `fadeInOverride`: Optional CSS class containing style information needed to execute the fade in. Note: If you change the transition duration, the parameter is required.
 * `fadeOutOverride`: Same as `fadeInOverride` except the class you want to use to fade out.
-  * Note: [see here](#adjust-transition-duration) for more information about how to implement the fade in/fade out classes
+  * Note: [see here](#adjusting-crossdissolve-transition-duration) and [here](#adjusting-sequencedissolve-transition-duration) for more information about how to implement the fade in/fade out classes
 
 ## Using DissolveAnimation With Angular Templates
 
@@ -51,7 +67,7 @@ TransitionItem(track: number, state: string, klass: string, data: string);
 ## Cross Dissolve Example
 
 * Create a new angular project: `ng new my-animation` ([see here](https://angular.io/guide/quickstart) if you don't have angular installed).
-* `cd` into the root of your project and run `git clone --depth=1 --branch=master https://github.com/tdnelson2/dissolve-animation.git`. You should now have a folder inside your project named `dissolve-animation`.
+* `cd` into the root of your project and run `npm install --save css-dissolve-animation-angular`.
 * Create a new service called `photo`: `ng g service photo --module=app`.
 * In `src/app/photo.service.ts` replace the boilerplate code with the following code to implement the ability to fetch photos from picsum.com:
 
@@ -83,13 +99,13 @@ export class PhotoService {
 ```typescript
 import { Component, OnInit } from '@angular/core';
 
-import { CrossDissolve } from '../../../dissolve-animation/cross-dissolve';
+import { CrossDissolve } from 'css-dissolve-animation-angular';
 import { PhotoService } from '../photo.service';
 
 @Component({
   selector: 'app-slideshow',
   templateUrl: './slideshow.component.html',
-  styleUrls: ['../../../dissolve-animation/styles.css', './slideshow.component.css']
+  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './slideshow.component.css']
 })
 export class SlideshowComponent implements OnInit {
 
@@ -164,7 +180,7 @@ export class SlideshowComponent implements OnInit {
 }
 ```
 
-* Run `ng serve --open` and a fabulous full screen slideshow should appear complete with absurdly long cross dissolves. To learn how to speed them up, skip to [Adjust Transition Duration](#adjust-transition-duration).
+* Run `ng serve --open` and a fabulous full screen slideshow should appear complete with absurdly long cross dissolves. To learn how to speed them up, skip to [Adjusting `CrossDissolve` Transition Duration](#adjusting-crossdissolve-transition-duration).
 
 ## Sequence Dissolve Example
 
@@ -189,13 +205,14 @@ export const HEADLINES =
 ```typescript
 import { Component, OnInit } from '@angular/core';
 
-import { SequenceDissolve } from '../../../dissolve-animation/sequence-dissolve';
+
+import { SequenceDissolve } from 'css-dissolve-animation-angular';
 
 import { HEADLINES } from './headlines';
 @Component({
   selector: 'app-headlines',
   templateUrl: './headlines.component.html',
-  styleUrls: ['../../../dissolve-animation/styles.css', './headlines.component.css']
+  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './headlines.component.css']
 })
 export class HeadlinesComponent implements OnInit {
 
@@ -254,13 +271,20 @@ export class HeadlinesComponent implements OnInit {
 </div>
 ```
 
+* Run `ng serve --open` and text should appear above the slideshow, complete with ridiculously long sequence dissolves. To learn how to speed them up, skip to [Adjusting `SequenceDissolve` Transition Duration](#adjusting-sequencedissolve-transition-duration).
+
 ## Adjust The Interval Between Transitions
 
-* Note: for this example we use `CrossDissolve` but `SequenceDissolve` works in the exact same way.
 * In `src/app/slideshow/slideshow.component.ts` add `3000` as the third parameter (interval in milliseconds) like so:
 
 ```typescript
 this.crossDissolve = new CrossDissolve(photos, 'bg', 3000);
+```
+
+* In `src/app/headlines/headlines.component.ts` add `3000` as the third parameter:
+
+```typescript
+this.sequenceDissolve = new SequenceDissolve(HEADLINES, 'headline', 3000);
 ```
 
 * Save the changes. Now the interval between transitions should be three seconds instead of eight.
@@ -322,4 +346,4 @@ this.crossDissolve = new CrossDissolve(photos, 'bg', 3000, 1000, 'my-cross-disso
 this.sequenceDissolve = new SequenceDissolve(HEADLINES, 'headline', 3000, (500/.96), 'my-sequence-dissolve-fade-in', 'my-sequence-dissolve-fade-out');
 ```
 
-* The main difference between `CrossDissolve` and `SequenceDissolve` is the transitions do not occur simutaneously so if we set the duration to one-half of a second (500 miliseconds), the entire sequence dissove would take around one second to complete. Notice I say "around one second". I say this because the duration of each transition is decreased by 4% to avoid a flash when next elements appears. If we want the true duration to be 500 miliseconds, we must divide it by .96. The same principle applies to the CSS: if we want the true duration to be .5 we must divide it by .96.
+* The main difference between `CrossDissolve` and `SequenceDissolve` is the transitions do not occur simutaneously so if we set the duration to 1/2 second (500 miliseconds), the entire sequence dissove would take around one second to complete. Notice I say "around one second". I say this because the duration of each transition is decreased by 4% to avoid a flash when next elements appears. If we want the true duration to be 500 miliseconds, we must divide it by .96. The same principle applies to the CSS: if we want the true duration to be .5 we must divide it by .96.
