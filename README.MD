@@ -1,340 +1,416 @@
-# DissolveAnimation
+# Warning
 
-This module implements ES6 Promises, classes, and subclasses under the hood to control various CSS animations. It's currently only setup to work with Angular, but everything is writen in vanilla JavaScript (TypeScript) so it could easily be adapted to work with other frameworks.
+This quickstart is under active development and hasn't yet reached its final form.
 
-## Background
+It may not be fully compatible with current versions of Angular.
 
-I decided to create this after I was unable to find other libraries that are fully compatible with all browsers. I also couldn't find a simple implementation for cross dissolves and sequence dissolves.
+# Angular QuickStart Lib
+[![Build Status][travis-badge]][travis-badge-url]
 
-## Getting started
+This is a simple library quickstart for Angular libraries, implementing the
+[Angular Package Format v4.0](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs/edit#heading=h.k0mh3o8u5hx).
 
-`cd` into your project directory and run `npm install --save css-dissolve-animation-angular`.
+Currently only unscoped, primary entry-point libraries are supported.
 
-## Animation Types
+Features:
+- a simple example library
+- unit tests for the library
+- a demo application that consumes the library in JIT mode and runs in watch mode
+- an integration app that consumes the library in JIT and AOT mode and runs e2e tests
 
-There are currently only two dissolve types:
+Common tasks are present as npm scripts:
 
-* **Cross Dissolve**: One element fades out while another element fades in simultaneously.
-  * `import { CrossDissolve } from 'css-dissolve-animation-angular';`
-* **Sequence Dissolve**: One element fades out then the second element fades in.
-  * `import { SequenceDissolve } from 'css-dissolve-animation-angular';`
+- `npm start` to run a live-reload server with the demo app
+- `npm run test` to test in watch mode, or `npm run test:once` to only run once
+- `npm run build` to build the library
+- `npm run lint` to lint 
+- `npm run clean` to clean
+- `npm run integration` to run the integration e2e tests
+- `npm install ./relative/path/to/lib` after `npm run build` to test locally in another app
 
-## Using With Angular Components
+If you need to debug the integration app, please check `./integration/README.md`.
 
-* In each component using DissolveAnimation, add the path to this module's stylesheet to the component decorator under `styleUrls`:
+[travis-badge]: https://travis-ci.org/filipesilva/angular-css-dissolve-animation-angular.svg?branch=master
+[travis-badge-url]: https://travis-ci.org/filipesilva/angular-css-dissolve-animation-angular
 
-```typescript
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './app.component.css']
-})
+## The QuickStart Library seed
+
+This example repository has an implemention of the described package format but is by no means
+the only way you should publish a library.
+
+Any setup that builds the necessary package format works just as well for a consumer.
+You are encouraged to customize this process as you see fit.
+
+When developing your own setup, keep in mind that even though [AOT](#appendix-supporting-aot)
+is preferred, [Just-in-time](#appendix-supporting-jit) compilation should be supported.
+
+Make sure you have at least Node 6.9 and NPM 3.0 installed.
+Then ...
+
+1. Create a project folder (you can call it `css-dissolve-animation-angular` and rename it later).
+1. [Clone](#clone "Clone it from github") or [download](#download "download it from github") the **QuickStart Library seed** into your project folder.
+1. Install npm packages.
+1. Run `npm start` to launch the sample application.
+
+
+### Clone
+
+Perform the _clone-to-launch_ steps with these terminal commands.
+
+```
+git clone https://github.com/filipesilva/angular-css-dissolve-animation-angular.git
+cd angular-css-dissolve-animation-angular
+npm install
+npm start
 ```
 
-## Dissolve `class` Parameters
 
-* Both `CrossDissolve` and `SequenceDissolve` share the following signature:
+### Download
+[Download the QuickStart Library seed](https://github.com/filipesilva/angular-css-dissolve-animation-angular/archive/master.zip)
+and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
 
-```typescript
-CrossDissolve(dataArray: any[], staticKlasses?: string, interval: number?, transitionDuration: number?, fadeInOverride?: string, fadeOutOverride?: string);
+```
+cd angular-css-dissolve-animation-angular
+npm install
+npm start
 ```
 
-* `dataArray`: an array of `object`s containing the data you want to use to populate the html template.
-* `staticKlasses`: a `string` containing the CSS class(es) you want applied to all elements (leave blank if you don't want any CSS classes applied).
-* `interval`: `number` in miliseconds indicating the interval between transitions (`8000` if none is provided).
-* `transitionDuration`: `number` in miliseconds indicating length of the transition (`3000` if none is provided).
-* `fadeInOverride`: Optional CSS class containing style information needed to execute the fade in. Note: If you change the transition duration, the parameter is required.
-* `fadeOutOverride`: Same as `fadeInOverride` except the class you want to use to fade out.
-  * Note: [see here](#adjust-transition-duration) for more information about how to implement the fade in/fade out classes
 
-## Using DissolveAnimation With Angular Templates
+## Initialize your repository
 
-* DissolveAnimation provides the template with two instances of the `TransitionItem` class: `itemA` and `itemB`. `itemA` should have a higher `z-index` than `itemB`. Consequently, html elements containing `itemA` should be placed below those containing `itemB`. See [here](#implementing-crossdissolve-in-the-template-) and [here](#implementing-sequencedissolve-in-the-template-) for more details on how `TransitionItem`s  can be used in templates.
+If you cloned the package from github, it has a `.git` folder where the official repository's history lives.
 
-#### `TransitionItem` signature:
+You don't want that git history though - you'll want to make your own. 
 
-```typescript
-TransitionItem(track: number, state: string, klass: string, data: string);
+Delete this folder and initialize this one as a new repository:
+
+```
+rm -rf .git # Linux or OS/X (bash)
+rd .git /S/Q # Windows
+git init
 ```
 
-* `track`: indicates which item has a higher `z-index`. DissolveAnimation assigns `itemA` track `1` and `itemB` track `2`.
-* `state`: indicates whether the item is in a `'hide'` or `'show'` state (intended for internal use).
-* `klass`: is a `string` containing the CSS class(es) assigned to the item. `klass` gets updated depending on the `state` and whether or not a transition is in progress.
-* `data`: is an item from `dataArray` which is specified when instantiating `CrossDissolve`/`SequenceDissolve` ([see above](#dissolve-class-parameters)).
+**Warning**: Do this only in the beginning to avoid accidentally deleting your own git setup!
 
-## Cross Dissolve Example
 
-* Create a new angular project: `ng new my-animation` ([see here](https://angular.io/guide/quickstart) if you don't have angular installed).
-* `cd` into the root of your project and run `git clone --depth=1 --branch=master https://github.com/tdnelson2/dissolve-animation.git`. You should now have a folder inside your project named `dissolve-animation`.
-* Create a new service called `photo`: `ng g service photo --module=app`.
-* In `src/app/photo.service.ts` replace the boilerplate code with the following code to implement the ability to fetch photos from picsum.com:
 
-```typescript
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+## What's in the QuickStart Library seed?
 
-import { Observable } from 'rxjs/Observable';
+The **QuickStart Library seed** contains a similar structure to the [Quickstart seed](https://github.com/angular/quickstart).
+It's modified to build and test a library instead of an application.
 
-@Injectable()
-export class PhotoService {
+Consequently, there are _many different files_ in the project.
+Focus on the following TypeScript (`.ts`) files in the **`/src`** folder.
 
-  constructor(private http: HttpClient) { }
+```
+src/
+├── demo/
+|  └── app/
+|     ├── app.component.ts
+|     └── app.module.ts
+└── lib/
+   ├── index.ts
+   └── src/
+      ├── component/
+      |  └── lib.component.ts
+      ├── service/
+      |  └── lib.service.ts
+      └── module.ts
 
-  public fetchPhotos():Observable<any> {
-    return this.http.get('https://picsum.photos/list');
-  }
-}
 ```
 
-* In `src/app/app.module.ts` add `import { HttpClientModule } from '@angular/common/http';` at the top and include `HttpClientModule` in the `imports` array.
+Each file has a distinct purpose and evolves independently as the application grows.
 
-#### Implementing `CrossDissolve` in a component:
+Files outside `src/` concern building, deploying, and testing your app.
+They include configuration files and external dependencies.
 
-* Create a new component named `slideshow`: `ng g component slideshow`.
-* In `src/app/app.component.html` delete all the boilerplate html and add `<app-slideshow></app-slideshow>`.
-* Also replace the boilerplate code in `src/app/slideshow/slideshow.component.ts` with the following:
+Files inside `src/lib/` "belong" to your library, while `src/demo/` contains a demo application
+that loads your library.
 
-```typescript
-import { Component, OnInit } from '@angular/core';
+Libraries do not run by themselves, so it's very useful to have this "demo" app while developing 
+to see how your library would look like to consumers.
 
-import { CrossDissolve } from 'css-dissolve-animation-angular';
-import { PhotoService } from '../photo.service';
+When you run `npm start`, the demo application is served.
 
-@Component({
-  selector: 'app-slideshow',
-  templateUrl: './slideshow.component.html',
-  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './slideshow.component.css']
-})
-export class SlideshowComponent implements OnInit {
+The following are all in `src/`
 
-  public crossDissolve: CrossDissolve;
+<table width="100%">
+  <col width="20%">
+  </col>
+  <col width="80%">
+  </col>
+  <tr>
+    <th>
+      File
+    </th>
+    <th>
+      Purpose
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <code>demo/app/app.component.ts</code>
+    </td>
+    <td>
+      A demo component that renders the library component and a value from the library service.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>demo/app/app.module.ts</code>
+    </td>
+    <td>
+      A demo <code>NgModule</code> that imports the Library <code>LibModule</code>.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>lib/src/component/app.component.ts</code>
+    </td>
+    <td>
+      A sample library component that renders an <code>h2</code> tag.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>lib/src/service/lib.service.ts</code>
+    </td>
+    <td>
+      A sample library service that exports a value.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>lib/src/module.ts</code>
+    </td>
+    <td>
+      The library's main <code>NgModule</code>, <code>LibModule</code>.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>lib/index.ts</code>
+    </td>
+    <td>
+      The public API of your library, where you choose what to export to consumers.
+    </td>
+  </tr>
+</table>
 
-  constructor( public photoService: PhotoService ) { }
 
-  ngOnInit() {
-    this.photoService.fetchPhotos().subscribe((response: any) => {
-      const start = this.getRandomInt(0,response.length-11);
-      const photos = response.slice(start, start+10);
-      this.addData(photos);
-      this.crossDissolve = new CrossDissolve(photos, 'bg');
-      this.crossDissolve.animate();
-    });
-  }
+## The build step
 
-  private addData(photos: any[]): void {
-    for (let photo of photos) {
-      photo['style'] = this.buildBGStyle(photo.id);
-    }
-  }
+You can build the library by running `npm run build`. 
+This will generate a `dist/` directory with all the entry points described above.
 
-  private getRandomInt(min: number, max:number): number {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+All the logic for creating the build can be found in `./build.js`. It consists of roughly 5 steps:
 
-  private buildImgUrl(id: number): string {
-    const width = Math.floor(window.innerWidth*window.devicePixelRatio);
-    const height = Math.floor(window.innerHeight*window.devicePixelRatio);
-    return `https://picsum.photos/${width}/${height}/?image=${id}`
-  }
+- Compile with the AOT Compiler (AOT compiler or `ngc`) for ES5 and ES2015.
+- Inline html and css inside the generated JavaScript files.
+- Copy typings, metatada, html and css.
+- Create each bundle using Rollup.
+- Copy `LICENSE`, `package.json` and `README.md` files
 
-  private buildBGStyle(id: number): any {
-    const url = this.buildImgUrl(id);
-    return {'background-image':  `url(${url})`};
-  }
-}
-```
 
-#### Implementing `CrossDissolve` in the template:
+## Testing libraries
 
-* Replace the boilerplate code in `src/app/slideshow/slideshow.component.html` with the following:
+While testing is always important, it's **especially** important in libraries because consumer
+applications might break due to bugs in libraries.
 
-```html
-<div *ngIf="crossDissolve &&
-      crossDissolve.itemA.data &&
-      crossDissolve.itemB.data">
-  <div [ngClass]="crossDissolve.itemB.klass"
-       [ngStyle]="crossDissolve.itemB.data.style">
-  </div>
-  <div [ngClass]="crossDissolve.itemA.klass"
-       [ngStyle]="crossDissolve.itemA.data.style">
-  </div>
+But the fact that a library is consumed by another application is also what makes it hard to test.
+
+To properly test a library, you need to have an integration tests.
+An integration test is to libraries what an end-to-end test is to applications.
+It tests how an app would install and use your library.
+
+The **QuickStart Library seed** includes a directory called `integration` containing a standalone
+app that consumes your built library in both AOT and JIT modes, with end-to-end tests to verify
+it works.
+
+To run the integration tests, do `npm run integration` which does the following:
+- Build your library.
+- Enter the integration app's directory.
+- Install dependencies.
+- Build the app in AOT mode.
+- Test the app in AOT mode.
+- Test the app in JIT mode.
+
+Running integration tests gives you greater confidence that your library is properly built.
+
+In addition to integration tests, you can also run unit tests in watch mode via `npm run test`,
+or single-run via `npm run test:once`.
+
+You can also test your library by installing it in another local repository you have. 
+To do so, first build your lib via `npm run build`.
+Then install it from your other repo using a relative path to the dist folder: 
+`npm install relative/path/to/library/dist`.
+
+
+## Publishing your library
+
+Every package on NPM has a unique name, and so should yours. 
+If you haven't already, now is the time to change the name of your library.
+
+Use your editor to search the project for all instances of `css-dissolve-animation-angular` and change it
+to your intended name (also in `dash-case` format).
+The library name is mentioned on at least these files: 
+
+- `integration/src/app/app.component.ts`
+- `integration/src/app/app.module.ts`
+- `integration/src/systemjs.config.js`
+- `integrations/package.json`
+- `src/demo/app/app.component.ts`
+- `src/demo/app/app.module.ts`
+- `src/demo/systemjs.config.js`
+- `src/demo/tsconfig.json`
+- `src/lib/tsconfig.es5.json`
+- `src/lib/tsconfig.lib.json`
+- `bs-config.json`
+- `package.json`
+- `README.md`
+
+You'll also need to rename the folder your project is in.
+
+After you have changed the package name, you can publish it to NPM (read 
+[this link](https://docs.npmjs.com/getting-started/publishing-npm-packages) for details).
+
+Instead of following the `Updating the package` on that previous doc, here we use
+[standard-version](https://github.com/conventional-changelog/standard-version).
+Read their docs to see how to use it.
+
+First you'll need to create a NPM account and login on your local machine.
+Then you can publish your package by running `npm publish dist/`.  
+Since your package is built on the `dist/` folder this is the one you should publish.
+
+
+<div class="l-sub-section">
+
+### Be a good library maintainer
+
+Now that you've published a library, you need to maintain it as well. 
+Below are some of the most important points:
+
+- Document your library.
+- Keep an eye on the issue tracker.
+- [Manage your dependencies properly](#appendix-dependency-management)
+- Follow [Semantic Versioning](http://semver.org/)
+- Setup a Continuous Integration solution to test your library (included is a `.travis.yml` 
+file for [Travis CI](https://docs.travis-ci.com/user/getting-started/))!
+- Choose an [appropriate license](https://choosealicense.com/).
+
 </div>
-```
-
-#### Implementing `CrossDissolve` in the CSS:
-
-* Add the following in `src/app/slideshow/slideshow.component.css`:
-
-```css
-.bg {
-  left: 0;
-  top: 0;
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-```
-
-* Run `ng serve --open` and a fabulous full screen slideshow should appear complete with absurdly long cross dissolves. To learn how to speed them up, skip to [Adjust Transition Duration](#adjust-transition-duration).
-
-## Sequence Dissolve Example
-
-#### Implementing `SequenceDissolve` in a component:
-
-* Create a new component named `headlines`: `ng g component headlines`.
-* In `src/app/app.component.html` add `<app-headlines></app-headlines>` BELOW `<app-slideshow></app-slideshow>`. Note: If you put it above `<app-slideshow>`, it will be covered by the slideshow. However, in production, you'll likely want the slideshow to load last so it would be best to put the slideshow towards the bottom and adjust the `z-index` on the other elements to ensure they appear above.
-* In `src/app/headlines/` create a new file named `headlines.ts` and add the following:
-
-```typescript
-export const HEADLINES =
-[
-{ headline: "Lorem ipsum dolor sit amet", url: "http://www.example.com/" },
-{ headline: "consectetur adipiscing elit", url: "http://www.example.com/" },
-{ headline: "sed do eiusmod tempor incididunt", url: "http://www.example.com/" },
-{ headline: "Ut enim ad minim veniam", url: "http://www.example.com/" }
-];
-```
-
-* In `src/app/headlines/headlines.component.ts` replace the boilerplate code with the following:
-
-```typescript
-import { Component, OnInit } from '@angular/core';
 
 
-import { SequenceDissolve } from 'css-dissolve-animation-angular';
+## Appendix: Supporting AOT
 
-import { HEADLINES } from './headlines';
-@Component({
-  selector: 'app-headlines',
-  templateUrl: './headlines.component.html',
-  styleUrls: ['../../../node_modules/css-dissolve-animation-angular/css/styles.css', './headlines.component.css']
-})
-export class HeadlinesComponent implements OnInit {
+AOT plays an important role in optimizing Angular applications. 
+It's therefore important that third party libraries be published in a format compatible with AOT
+compilation.
+Otherwise it will not be possible to include the library in an AOT compiled application.
 
-  public sequenceDissolve: SequenceDissolve;
+Only code written in TypeScript can be AOT compiled.
+ 
+Before publishing the library must first be compiled using the AOT compiler (`ngc`). 
+`ngc` extends the `tsc` compiler by adding extensions to support AOT compilation in addition to
+regular TypeScript compilation.   
 
-  constructor() { }
+AOT compilation outputs three files that must be included in order to be compatible with AOT.
 
-  ngOnInit() {
-    this.sequenceDissolve = new SequenceDissolve(HEADLINES, 'headline');
-    this.sequenceDissolve.animate();
-  }
-}
-```
+*Transpiled JavaScript*
 
-#### Implementing `SequenceDissolve` in the CSS:
+As usual the original TypeScript is transpiled to regular JavaScript.
 
-* In `src/app/headlines/headlines.component.css` add the following:
+*Typings files*
 
-```css
-.headline {
-  color: #ffffff;
-  padding-top: 100px;
-  text-align: center;
-}
+JavaScript has no way of representing typings. 
+In order to preserve the original typings, `ngc` will generate `.d.ts` typings files.
 
-.headline a {
-  color: #ffffff;
-  text-decoration: none;
-}
+*Meta Data JSON files*
 
-.headline a:hover {
-  text-decoration: underline;
-}
-```
+`ngc` outputs a metadata.json file for every `Component` and `NgModule`.
+These meta data files represent the information in the original `NgModule` and `Component`
+decorators.   
 
-#### Implementing `SequenceDissolve` in the template:
+The meta data may reference external templates or css files.
+These external files must be included with the library.
 
-* Finally, in `src/app/headlines/headlines.component.html` replace the boilerplate code with the following:
+### NgFactories
 
-```html
-<div *ngIf="sequenceDissolve &&
-            sequenceDissolve.itemA &&
-            sequenceDissolve.itemB">
-    <h1 [ngClass]="sequenceDissolve.itemB.klass">
-      <a href="{{sequenceDissolve.itemB.data.url}}"
-         target="_blank">
-        {{sequenceDissolve.itemB.data.headline}}
-      </a>
-    </h1>
-    <h1 [ngClass]="sequenceDissolve.itemA.klass">
-      <a href="{{sequenceDissolve.itemA.data.url}}"
-         target="_blank">
-        {{sequenceDissolve.itemA.data.headline}}
-      </a>
-    </h1>
-</div>
-```
+`ngc` generates a series of files with an `.ngfactory` suffix as well.
+These files represent the AOT compiled source, but should not be included with the published library.
 
-## Adjust The Interval Between Transitions
+Instead the `ngc` compiler in the consuming application will generate `.ngfactory` files based
+on the JavaScript, Typings and meta data shipped with the library. 
 
-* Note: for this example we use `CrossDissolve` but `SequenceDissolve` works in the exact same way.
-* In `src/app/slideshow/slideshow.component.ts` add `3000` as the third parameter (interval in milliseconds) like so:
+### Why not publish TypeScript?
 
-```typescript
-this.crossDissolve = new CrossDissolve(photos, 'bg', 3000);
-```
+Why not ship TypeScript source instead? 
+After all the library will be part of another TypeScript compilation step when the library is
+imported by the consuming application.
 
-* Save the changes. Now the interval between transitions should be three seconds instead of eight.
-* Note: since the next image is always loading in the background, there should be a lower chance that the the image will not be fully loaded once the transition occurs. However, if you know your website will be viewed over a slow connection, it is a good idea to keep the intervals long in order to ensure enough load time before the next image fades in.
+Generally it's discouraged to ship TypeScript with third party libraries. 
+It would require the consumer to replicate the complete build environment of the library. 
+Not only typings, but potentially a specific version of `ngc` as well.
 
-## Adjusting `CrossDissolve` Transition Duration
+Publishing plain JavaScript with typings and meta data allows the consuming application to 
+remain agnostic of the library's build environment.
 
-* Add the following to `src/app/slideshow/slideshow.component.css`:
 
-```css
-.my-cross-dissolve-fade-in {
-  -webkit-animation: daFadeIn 1s linear;
-  -moz-animation: daFadeIn 1s linear;
-  -o-animation: daFadeIn 1s linear;
-  animation: daFadeIn 1s linear;
-}
+## Appendix: Supporting JIT
 
-.my-cross-dissolve-fade-out {
-  -webkit-animation: daFadeOut 1s linear;
-  -moz-animation: daFadeOut 1s linear;
-  -o-animation: daFadeOut 1s linear;
-  animation: daFadeOut 1s linear;
-}
-```
+AOT compiled code is the preferred format for production builds, but due to the long compilation
+time it may not be practical to use AOT during development.
 
-* In `src/app/slideshow/slideshow.component.ts` add three more parameters to  `CrossDissolve` like so:
+To create a more flexible developer experience a JIT compatible build of the library should be
+published as well. 
+The format of the JIT bundle is `umd`, which stands for Universal Module Definition.
+Shipping the bundle as `umd` ensures compatibility with most common module loading formats.
 
-```typescript
-this.crossDissolve = new CrossDissolve(photos, 'bg', 3000, 1000, 'my-cross-dissolve-fade-in', 'my-cross-dissolve-fade-out');
-```
+The `umd` bundle will ship as a single file containing ES5 JavaScript and inlined versions of 
+any external templates or css. 
 
-* The first parameter added is the new transition duration in miliseconds. The last two reflect the two classes we added to `slideshow.component.css`.
 
-* After saving, the page should reload and the transitions should only be one second long.
+## Appendix: Dependency Management
 
-## Adjusting `SequenceDissolve` Transition Duration
+As a library maintainer, it's important to properly manage your dependencies in `package.json`.
 
-* Add the following to `src/app/headlines/headlines.component.css`:
+There are [three kinds of dependencies](https://docs.npmjs.com/files/package.json#dependencies):
+ `dependencies`, `devDependencies` and `peerDependencies`.
 
-```css
-.my-sequence-dissolve-fade-in {
-  -webkit-animation: daFadeIn calc(0.5s/.96) linear;
-  -moz-animation: daFadeIn calc(0.5s/.96) linear;
-  -o-animation: daFadeIn calc(0.5s/.96) linear;
-  animation: daFadeIn calc(0.5s/.96) linear;
-}
+- `dependencies`: here go all the other libraries yours depends on when being used.
+A good way to figure out these is to go through your library source code (in `src/lib` **only**)
+and list all the libraries there.
+- `devDependencies`: libraries that you need while developing, testing and building your library
+go here.
+When a user installs your library, these won't be installed. 
+Users don't need to develop, build or test your library, they just need to run it.
+- `peerDependencies`: these are similar to `dependencies` since your library expects them to be
+there at runtime.
+The difference is that you don't want to install a new version of these, but instead use
+the one already available. 
 
-.my-sequence-dissolve-fade-out {
-  -webkit-animation: daFadeOut calc(0.5s/.96) linear;
-  -moz-animation: daFadeOut calc(0.5s/.96) linear;
-  -o-animation: daFadeOut calc(0.5s/.96) linear;
-  animation: daFadeOut calc(0.5s/.96) linear;
-}
-```
+A good example of a peer dependency is `@angular/core` and all other main Angular libraries.
+If you listed these in `dependencies`, a new one - with a different version! - could be installed
+for your library to use.
+This isn't what you wanted though. You want your library to use *the exact same* `@angular/core`
+that the app is using.
 
-* In `src/app/headlines/headlines.component.ts` add three more parameters to  `SequenceDissolve` like so:
+You'll usually used `@angular/*` libraries listed in both `devDependencies` and 
+`peerDependencies`.
+This is normal and expected, because when you're developing your library also need a copy of
+them installed.
 
-```typescript
-this.sequenceDissolve = new SequenceDissolve(HEADLINES, 'headline', 3000, (500/.96), 'my-sequence-dissolve-fade-in', 'my-sequence-dissolve-fade-out');
-```
+Another thing to remember is to keep your dependencies from changing too much unexpectedly.
+Different versions of libraries can have different features, and if you inadvertently are too
+lenient with allowed versions your library might stop working because a dependency changed.
 
-* The main difference between `CrossDissolve` and `SequenceDissolve` is the transitions do not occur simutaneously so if we set the duration to one-half of a second (500 miliseconds), the entire sequence dissove would take around one second to complete. Notice I say "around one second". I say this because the duration of each transition is decreased by 4% to avoid a flash when next elements appears. If we want the true duration to be 500 miliseconds, we must divide it by .96. The same principle applies to the CSS: if we want the true duration to be .5 we must divide it by .96.
+You can choose what versions you allow by using [ranges](https://docs.npmjs.com/misc/semver).
+
+A good rule of thumb is to have all `dependencies` specified with a tilde `~`(`~1.2.3`),
+while your `peerDependencies` have a range (`"@angular/core": ">=4.0.0 <5.0.0 || >=4.0.0-beta <5.0.0"`).
+
+Any extra dependency or peer dependency that you add to `package.json` should also be added
+to the `globals` and `external` array in the `rollupBaseConfig` variable in `./build.js`.
+
+This ensures your library doesn't package extra libraries inside of it and instead uses the ones
+available in the consuming app.
