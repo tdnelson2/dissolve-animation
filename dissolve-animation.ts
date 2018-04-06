@@ -51,8 +51,14 @@ export class DissolveAnimation {
   public shownKlass     = () => this.klasses('da-shown');
 
   private promisefy = (item: TransitionItem, klass: string, delay: number):Promise<any> => {
+    this.emitEvent(klass+'--WILL-ADD');
     item.klass = klass;
-    return new Promise((r, j) => setTimeout(r, delay, item));
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        this.emitEvent(klass+'--WILL-REMOVE');
+        resolve(item);
+      }, delay);
+    });
   }
 
   public fadeOut   = (it: TransitionItem) => this.promisefy(it, this.fadeOutKlass(), this.transitionDuration);
@@ -83,5 +89,10 @@ export class DissolveAnimation {
     const index = this.i;
     this.i = this.i === this.dataArray.length-1 ? 0 : this.i+1;
     return this.dataArray[index];
+  }
+
+  private emitEvent(label: string): void {
+    const evt = new Event(label);
+    document.dispatchEvent(evt);
   }
 }
