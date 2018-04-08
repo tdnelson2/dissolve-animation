@@ -6,37 +6,53 @@ var DissolveAnimation = (function () {
      * @param {?=} transitionDuration
      * @param {?=} fadeInOverride
      * @param {?=} fadeOutOverride
+     * @param {?=} eventIdentifier
      * @param {?=} transitionDurationWasProvided
      */
-    function DissolveAnimation(dataArray, staticKlasses, interval, transitionDuration, fadeInOverride, fadeOutOverride, transitionDurationWasProvided) {
+    function DissolveAnimation(dataArray, staticKlasses, interval, transitionDuration, fadeInOverride, fadeOutOverride, eventIdentifier, transitionDurationWasProvided) {
         if (interval === void 0) { interval = 8000; }
         if (transitionDurationWasProvided === void 0) { transitionDurationWasProvided = false; }
         var _this = this;
         this.i = 0;
+        this.invisibleCSSLabel = 'da-invisible';
+        this.visibleCSSLabel = 'da-visible';
+        this.hiddenCSSLabel = 'da-hidden';
+        this.shownCSSLabel = 'da-shown';
         this.fadeOutKlass = function () { return _this.klasses(_this.fadeOutCSSLabel); };
         this.fadeInKlass = function () { return _this.klasses(_this.fadeInCSSLabel); };
-        this.invisibleKlass = function () { return _this.klasses('da-invisible'); };
-        this.visibleKlass = function () { return _this.klasses('da-visible'); };
-        this.hiddenKlass = function () { return _this.klasses('da-hidden'); };
-        this.shownKlass = function () { return _this.klasses('da-shown'); };
+        this.invisibleKlass = function () { return _this.klasses(_this.invisibleCSSLabel); };
+        this.visibleKlass = function () { return _this.klasses(_this.visibleCSSLabel); };
+        this.hiddenKlass = function () { return _this.klasses(_this.hiddenCSSLabel); };
+        this.shownKlass = function () { return _this.klasses(_this.shownCSSLabel); };
         this.promisefy = function (item, klass, delay) {
-            item.klass = klass;
-            return new Promise(function (r, j) { return setTimeout(r, delay, item); });
+            var /** @type {?} */ eventName = "" + _this.eventIdentifier + _this.itemName(item) + "--" + klass;
+            _this.emitEvent(eventName + "--WILL-ADD");
+            item.klass = _this.klasses(klass);
+            return new Promise(function (resolve, reject) {
+                setTimeout(function () {
+                    _this.emitEvent(eventName + "--WILL-REMOVE");
+                    resolve(item);
+                }, delay);
+            });
         };
-        this.fadeOut = function (it) { return _this.promisefy(it, _this.fadeOutKlass(), _this.transitionDuration); };
-        this.fadeIn = function (it) { return _this.promisefy(it, _this.fadeInKlass(), _this.transitionDuration); };
-        this.invisible = function (it) { return _this.promisefy(it, _this.invisibleKlass(), _this.interval); };
-        this.visible = function (it) { return _this.promisefy(it, _this.visibleKlass(), _this.interval); };
-        this.hidden = function (it) { return _this.promisefy(it, _this.hiddenKlass(), _this.interval); };
-        this.shown = function (it) { return _this.promisefy(it, _this.shownKlass(), _this.interval); };
+        this.fadeOut = function (it) { return _this.promisefy(it, _this.fadeOutCSSLabel, _this.transitionDuration); };
+        this.fadeIn = function (it) { return _this.promisefy(it, _this.fadeInCSSLabel, _this.transitionDuration); };
+        this.invisible = function (it) { return _this.promisefy(it, _this.invisibleCSSLabel, _this.interval); };
+        this.visible = function (it) { return _this.promisefy(it, _this.visibleCSSLabel, _this.interval); };
+        this.hidden = function (it) { return _this.promisefy(it, _this.hiddenCSSLabel, _this.interval); };
+        this.shown = function (it) { return _this.promisefy(it, _this.shownCSSLabel, _this.interval); };
         this.dataArray = dataArray;
         this.staticKlasses = staticKlasses;
         this.interval = interval;
         this.transitionDuration = transitionDuration;
+        this.eventIdentifier = eventIdentifier === undefined ? '' : eventIdentifier + '--';
         if (transitionDurationWasProvided && (!fadeInOverride || !fadeOutOverride)) {
-            throw 'ERROR: parameter 5 (fade in CSS class name) ' +
-                'and 6 (fade out CSS class name) are required ' +
-                'if you provide a 3rd parameter (transition duration).';
+            throw 'ERROR: `fadeInOverride` and `fadeOutOverride` are required ' +
+                'if you provide `transitionDuration`.';
+        }
+        else if (!transitionDurationWasProvided && (fadeInOverride || fadeOutOverride)) {
+            throw 'ERROR: `fadeInOverride` and `fadeOutOverride` can only be ' +
+                'provided if `transitionDuration` is also provided';
         }
         else if (transitionDurationWasProvided && (fadeInOverride && fadeOutOverride)) {
             this.fadeInCSSLabel = fadeInOverride;
@@ -83,6 +99,21 @@ var DissolveAnimation = (function () {
         this.i = this.i === this.dataArray.length - 1 ? 0 : this.i + 1;
         return this.dataArray[index];
     };
+    /**
+     * @param {?} label
+     * @return {?}
+     */
+    DissolveAnimation.prototype.emitEvent = function (label) {
+        var /** @type {?} */ evt = new Event(label);
+        document.dispatchEvent(evt);
+    };
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    DissolveAnimation.prototype.itemName = function (item) {
+        return item.track === 1 ? 'itemA' : 'itemB';
+    };
     return DissolveAnimation;
 }());
 
@@ -116,19 +147,11 @@ var CrossDissolve = (function (_super) {
     __extends(CrossDissolve, _super);
     /**
      * @param {?} dataArray
-     * @param {?=} staticKlasses
-     * @param {?=} interval
-     * @param {?=} transitionDuration
-     * @param {?=} fadeInOverride
-     * @param {?=} fadeOutOverride
+     * @param {?=} __1
      */
-    function CrossDissolve(dataArray, staticKlasses, interval, transitionDuration, fadeInOverride, fadeOutOverride) {
-        if (staticKlasses === void 0) { staticKlasses = undefined; }
-        if (interval === void 0) { interval = undefined; }
-        if (transitionDuration === void 0) { transitionDuration = undefined; }
-        if (fadeInOverride === void 0) { fadeInOverride = undefined; }
-        if (fadeOutOverride === void 0) { fadeOutOverride = undefined; }
-        return _super.call(this, dataArray, staticKlasses, interval, transitionDuration ? transitionDuration : 3000, fadeInOverride, fadeOutOverride, transitionDuration !== undefined) || this;
+    function CrossDissolve(dataArray, _a) {
+        var _b = _a === void 0 ? {} : _a, _c = _b.staticKlasses, staticKlasses = _c === void 0 ? (undefined) : _c, _d = _b.interval, interval = _d === void 0 ? (undefined) : _d, _e = _b.transitionDuration, transitionDuration = _e === void 0 ? (undefined) : _e, _f = _b.fadeInOverride, fadeInOverride = _f === void 0 ? (undefined) : _f, _g = _b.fadeOutOverride, fadeOutOverride = _g === void 0 ? (undefined) : _g, _h = _b.eventIdentifier, eventIdentifier = _h === void 0 ? (undefined) : _h;
+        return _super.call(this, dataArray, staticKlasses, interval, transitionDuration ? transitionDuration : 3000, fadeInOverride, fadeOutOverride, eventIdentifier, transitionDuration !== undefined) || this;
     }
     
     /**
@@ -178,24 +201,16 @@ var SequenceDissolve = (function (_super) {
     __extends$1(SequenceDissolve, _super);
     /**
      * @param {?} dataArray
-     * @param {?=} staticKlasses
-     * @param {?=} interval
-     * @param {?=} transitionDuration
-     * @param {?=} fadeInOverride
-     * @param {?=} fadeOutOverride
+     * @param {?=} __1
      */
-    function SequenceDissolve(dataArray, staticKlasses, interval, transitionDuration, fadeInOverride, fadeOutOverride) {
-        if (staticKlasses === void 0) { staticKlasses = undefined; }
-        if (interval === void 0) { interval = undefined; }
-        if (transitionDuration === void 0) { transitionDuration = undefined; }
-        if (fadeInOverride === void 0) { fadeInOverride = undefined; }
-        if (fadeOutOverride === void 0) { fadeOutOverride = undefined; }
+    function SequenceDissolve(dataArray, _a) {
+        var _b = _a === void 0 ? {} : _a, _c = _b.staticKlasses, staticKlasses = _c === void 0 ? (undefined) : _c, _d = _b.interval, interval = _d === void 0 ? (undefined) : _d, _e = _b.transitionDuration, transitionDuration = _e === void 0 ? (undefined) : _e, _f = _b.fadeInOverride, fadeInOverride = _f === void 0 ? (undefined) : _f, _g = _b.fadeOutOverride, fadeOutOverride = _g === void 0 ? (undefined) : _g, _h = _b.eventIdentifier, eventIdentifier = _h === void 0 ? (undefined) : _h;
         var _this = this;
         var transitionDurationWasProvided = transitionDuration !== undefined;
-        // // Make the transition duration slightly shorter
-        // // to avoid a flash when the transition ends
-        transitionDuration = transitionDuration ? Math.floor(transitionDuration * .96) : 2900;
-        _this = _super.call(this, dataArray, staticKlasses, interval, transitionDuration, fadeInOverride, fadeOutOverride, transitionDurationWasProvided) || this;
+        // Make the transition duration slightly shorter
+        // to avoid a flash when the transition ends
+        var tdAdjusted = transitionDuration ? Math.floor(transitionDuration * .96) : 2900;
+        _this = _super.call(this, dataArray, staticKlasses, interval, tdAdjusted, fadeInOverride, fadeOutOverride, eventIdentifier, transitionDurationWasProvided) || this;
         return _this;
     }
     

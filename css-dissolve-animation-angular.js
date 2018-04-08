@@ -6,34 +6,50 @@ class DissolveAnimation {
      * @param {?=} transitionDuration
      * @param {?=} fadeInOverride
      * @param {?=} fadeOutOverride
+     * @param {?=} eventIdentifier
      * @param {?=} transitionDurationWasProvided
      */
-    constructor(dataArray, staticKlasses, interval = 8000, transitionDuration, fadeInOverride, fadeOutOverride, transitionDurationWasProvided = false) {
+    constructor(dataArray, staticKlasses, interval = 8000, transitionDuration, fadeInOverride, fadeOutOverride, eventIdentifier, transitionDurationWasProvided = false) {
         this.i = 0;
+        this.invisibleCSSLabel = 'da-invisible';
+        this.visibleCSSLabel = 'da-visible';
+        this.hiddenCSSLabel = 'da-hidden';
+        this.shownCSSLabel = 'da-shown';
         this.fadeOutKlass = () => this.klasses(this.fadeOutCSSLabel);
         this.fadeInKlass = () => this.klasses(this.fadeInCSSLabel);
-        this.invisibleKlass = () => this.klasses('da-invisible');
-        this.visibleKlass = () => this.klasses('da-visible');
-        this.hiddenKlass = () => this.klasses('da-hidden');
-        this.shownKlass = () => this.klasses('da-shown');
+        this.invisibleKlass = () => this.klasses(this.invisibleCSSLabel);
+        this.visibleKlass = () => this.klasses(this.visibleCSSLabel);
+        this.hiddenKlass = () => this.klasses(this.hiddenCSSLabel);
+        this.shownKlass = () => this.klasses(this.shownCSSLabel);
         this.promisefy = (item, klass, delay) => {
-            item.klass = klass;
-            return new Promise((r, j) => setTimeout(r, delay, item));
+            const /** @type {?} */ eventName = `${this.eventIdentifier}${this.itemName(item)}--${klass}`;
+            this.emitEvent(`${eventName}--WILL-ADD`);
+            item.klass = this.klasses(klass);
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    this.emitEvent(`${eventName}--WILL-REMOVE`);
+                    resolve(item);
+                }, delay);
+            });
         };
-        this.fadeOut = (it) => this.promisefy(it, this.fadeOutKlass(), this.transitionDuration);
-        this.fadeIn = (it) => this.promisefy(it, this.fadeInKlass(), this.transitionDuration);
-        this.invisible = (it) => this.promisefy(it, this.invisibleKlass(), this.interval);
-        this.visible = (it) => this.promisefy(it, this.visibleKlass(), this.interval);
-        this.hidden = (it) => this.promisefy(it, this.hiddenKlass(), this.interval);
-        this.shown = (it) => this.promisefy(it, this.shownKlass(), this.interval);
+        this.fadeOut = (it) => this.promisefy(it, this.fadeOutCSSLabel, this.transitionDuration);
+        this.fadeIn = (it) => this.promisefy(it, this.fadeInCSSLabel, this.transitionDuration);
+        this.invisible = (it) => this.promisefy(it, this.invisibleCSSLabel, this.interval);
+        this.visible = (it) => this.promisefy(it, this.visibleCSSLabel, this.interval);
+        this.hidden = (it) => this.promisefy(it, this.hiddenCSSLabel, this.interval);
+        this.shown = (it) => this.promisefy(it, this.shownCSSLabel, this.interval);
         this.dataArray = dataArray;
         this.staticKlasses = staticKlasses;
         this.interval = interval;
         this.transitionDuration = transitionDuration;
+        this.eventIdentifier = eventIdentifier === undefined ? '' : eventIdentifier + '--';
         if (transitionDurationWasProvided && (!fadeInOverride || !fadeOutOverride)) {
-            throw 'ERROR: parameter 5 (fade in CSS class name) ' +
-                'and 6 (fade out CSS class name) are required ' +
-                'if you provide a 3rd parameter (transition duration).';
+            throw 'ERROR: `fadeInOverride` and `fadeOutOverride` are required ' +
+                'if you provide `transitionDuration`.';
+        }
+        else if (!transitionDurationWasProvided && (fadeInOverride || fadeOutOverride)) {
+            throw 'ERROR: `fadeInOverride` and `fadeOutOverride` can only be ' +
+                'provided if `transitionDuration` is also provided';
         }
         else if (transitionDurationWasProvided && (fadeInOverride && fadeOutOverride)) {
             this.fadeInCSSLabel = fadeInOverride;
@@ -79,6 +95,21 @@ class DissolveAnimation {
         this.i = this.i === this.dataArray.length - 1 ? 0 : this.i + 1;
         return this.dataArray[index];
     }
+    /**
+     * @param {?} label
+     * @return {?}
+     */
+    emitEvent(label) {
+        const /** @type {?} */ evt = new Event(label);
+        document.dispatchEvent(evt);
+    }
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    itemName(item) {
+        return item.track === 1 ? 'itemA' : 'itemB';
+    }
 }
 
 class TransitionItem {
@@ -99,14 +130,10 @@ class TransitionItem {
 class CrossDissolve extends DissolveAnimation {
     /**
      * @param {?} dataArray
-     * @param {?=} staticKlasses
-     * @param {?=} interval
-     * @param {?=} transitionDuration
-     * @param {?=} fadeInOverride
-     * @param {?=} fadeOutOverride
+     * @param {?=} __1
      */
-    constructor(dataArray, staticKlasses = undefined, interval = undefined, transitionDuration = undefined, fadeInOverride = undefined, fadeOutOverride = undefined) {
-        super(dataArray, staticKlasses, interval, transitionDuration ? transitionDuration : 3000, fadeInOverride, fadeOutOverride, transitionDuration !== undefined);
+    constructor(dataArray, { staticKlasses = (undefined), interval = (undefined), transitionDuration = (undefined), fadeInOverride = (undefined), fadeOutOverride = (undefined), eventIdentifier = (undefined) } = {}) {
+        super(dataArray, staticKlasses, interval, transitionDuration ? transitionDuration : 3000, fadeInOverride, fadeOutOverride, eventIdentifier, transitionDuration !== undefined);
     }
     ;
     /**
@@ -143,18 +170,14 @@ class CrossDissolve extends DissolveAnimation {
 class SequenceDissolve extends DissolveAnimation {
     /**
      * @param {?} dataArray
-     * @param {?=} staticKlasses
-     * @param {?=} interval
-     * @param {?=} transitionDuration
-     * @param {?=} fadeInOverride
-     * @param {?=} fadeOutOverride
+     * @param {?=} __1
      */
-    constructor(dataArray, staticKlasses = undefined, interval = undefined, transitionDuration = undefined, fadeInOverride = undefined, fadeOutOverride = undefined) {
+    constructor(dataArray, { staticKlasses = (undefined), interval = (undefined), transitionDuration = (undefined), fadeInOverride = (undefined), fadeOutOverride = (undefined), eventIdentifier = (undefined) } = {}) {
         const transitionDurationWasProvided = transitionDuration !== undefined;
-        // // Make the transition duration slightly shorter
-        // // to avoid a flash when the transition ends
-        transitionDuration = transitionDuration ? Math.floor(transitionDuration * .96) : 2900;
-        super(dataArray, staticKlasses, interval, transitionDuration, fadeInOverride, fadeOutOverride, transitionDurationWasProvided);
+        // Make the transition duration slightly shorter
+        // to avoid a flash when the transition ends
+        const tdAdjusted = transitionDuration ? Math.floor(transitionDuration * .96) : 2900;
+        super(dataArray, staticKlasses, interval, tdAdjusted, fadeInOverride, fadeOutOverride, eventIdentifier, transitionDurationWasProvided);
     }
     ;
     /**

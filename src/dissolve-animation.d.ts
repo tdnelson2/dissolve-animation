@@ -10,7 +10,12 @@ export declare class DissolveAnimation {
     staticKlasses: string;
     private fadeInCSSLabel;
     private fadeOutCSSLabel;
-    constructor(dataArray: any[], staticKlasses: string, interval: number, transitionDuration: number, fadeInOverride: string, fadeOutOverride: string, transitionDurationWasProvided?: boolean);
+    private invisibleCSSLabel;
+    private visibleCSSLabel;
+    private hiddenCSSLabel;
+    private shownCSSLabel;
+    private eventIdentifier;
+    constructor(dataArray: any[], staticKlasses: string, interval: number, transitionDuration: number, fadeInOverride: string, fadeOutOverride: string, eventIdentifier: string, transitionDurationWasProvided?: boolean);
     klasses(klasses: string): string;
     fadeOutKlass: () => string;
     fadeInKlass: () => string;
@@ -27,4 +32,6 @@ export declare class DissolveAnimation {
     shown: (it: TransitionItem) => Promise<any>;
     getABTracks(): TransitionItem[];
     next(): any;
+    private emitEvent(label);
+    private itemName(item);
 }
