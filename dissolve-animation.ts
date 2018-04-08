@@ -13,6 +13,11 @@ export class DissolveAnimation {
   public staticKlasses: string;
   private fadeInCSSLabel: string;
   private fadeOutCSSLabel: string;
+  private invisibleCSSLabel = 'da-invisible';
+  private visibleCSSLabel = 'da-visible';
+  private hiddenCSSLabel = 'da-hidden';
+  private shownCSSLabel = 'da-shown';
+  private eventIdentifier: string;
 
   constructor( dataArray:          any[],
                staticKlasses:      string,
@@ -20,16 +25,20 @@ export class DissolveAnimation {
                transitionDuration: number,
                fadeInOverride:     string,
                fadeOutOverride:    string,
+               eventIdentifier:    string,
                transitionDurationWasProvided=false) {
     this.dataArray = dataArray;
     this.staticKlasses = staticKlasses;
     this.interval = interval;
     this.transitionDuration = transitionDuration;
+    this.eventIdentifier = eventIdentifier === undefined ? '' : eventIdentifier+'--';
 
     if (transitionDurationWasProvided && (!fadeInOverride || !fadeOutOverride)) {
-      throw 'ERROR: parameter 5 (fade in CSS class name) '+
-            'and 6 (fade out CSS class name) are required '+
-            'if you provide a 3rd parameter (transition duration).';
+      throw 'ERROR: `fadeInOverride` and `fadeOutOverride` are required '+
+            'if you provide `transitionDuration`.';
+    } else if (!transitionDurationWasProvided && (fadeInOverride || fadeOutOverride)) {
+      throw 'ERROR: `fadeInOverride` and `fadeOutOverride` can only be '+
+            'provided if `transitionDuration` is also provided';
     } else if (transitionDurationWasProvided && (fadeInOverride && fadeOutOverride)) {
       this.fadeInCSSLabel = fadeInOverride;
       this.fadeOutCSSLabel = fadeOutOverride;
@@ -45,28 +54,29 @@ export class DissolveAnimation {
 
   public fadeOutKlass   = () => this.klasses(this.fadeOutCSSLabel);
   public fadeInKlass    = () => this.klasses(this.fadeInCSSLabel);
-  public invisibleKlass = () => this.klasses('da-invisible');
-  public visibleKlass   = () => this.klasses('da-visible');
-  public hiddenKlass    = () => this.klasses('da-hidden');
-  public shownKlass     = () => this.klasses('da-shown');
+  public invisibleKlass = () => this.klasses(this.invisibleCSSLabel);
+  public visibleKlass   = () => this.klasses(this.visibleCSSLabel);
+  public hiddenKlass    = () => this.klasses(this.hiddenCSSLabel);
+  public shownKlass     = () => this.klasses(this.shownCSSLabel);
 
   private promisefy = (item: TransitionItem, klass: string, delay: number):Promise<any> => {
-    this.emitEvent(klass+'--WILL-ADD');
-    item.klass = klass;
+    const eventName = `${this.eventIdentifier}${this.itemName(item)}--${klass}`;
+    this.emitEvent(`${eventName}--WILL-ADD`);
+    item.klass = this.klasses(klass);
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        this.emitEvent(klass+'--WILL-REMOVE');
+        this.emitEvent(`${eventName}--WILL-REMOVE`);
         resolve(item);
       }, delay);
     });
   }
 
-  public fadeOut   = (it: TransitionItem) => this.promisefy(it, this.fadeOutKlass(), this.transitionDuration);
-  public fadeIn    = (it: TransitionItem) => this.promisefy(it, this.fadeInKlass(), this.transitionDuration);
-  public invisible = (it: TransitionItem) => this.promisefy(it, this.invisibleKlass(), this.interval);
-  public visible   = (it: TransitionItem) => this.promisefy(it, this.visibleKlass(), this.interval);
-  public hidden    = (it: TransitionItem) => this.promisefy(it, this.hiddenKlass(), this.interval);
-  public shown     = (it: TransitionItem) => this.promisefy(it, this.shownKlass(), this.interval);
+  public fadeOut   = (it: TransitionItem) => this.promisefy(it, this.fadeOutCSSLabel, this.transitionDuration);
+  public fadeIn    = (it: TransitionItem) => this.promisefy(it, this.fadeInCSSLabel, this.transitionDuration);
+  public invisible = (it: TransitionItem) => this.promisefy(it, this.invisibleCSSLabel, this.interval);
+  public visible   = (it: TransitionItem) => this.promisefy(it, this.visibleCSSLabel, this.interval);
+  public hidden    = (it: TransitionItem) => this.promisefy(it, this.hiddenCSSLabel, this.interval);
+  public shown     = (it: TransitionItem) => this.promisefy(it, this.shownCSSLabel, this.interval);
 
   public getABTracks(): TransitionItem[] {
     let a: TransitionItem;
@@ -94,5 +104,9 @@ export class DissolveAnimation {
   private emitEvent(label: string): void {
     const evt = new Event(label);
     document.dispatchEvent(evt);
+  }
+
+  private itemName(item: TransitionItem) {
+    return item.track === 1 ? 'itemA' : 'itemB';
   }
 }
